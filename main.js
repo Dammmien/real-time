@@ -1,8 +1,9 @@
 const User = require('./User');
 const Game = require('./Game');
+const Server = require('./Server');
 const WebSocket = require('ws');
 
-const server = new WebSocket.Server({ port: 3000 });
+const webSocketServer = new WebSocket.Server({ port: 8000 });
 
 const game = new Game({
 	users: [],
@@ -13,7 +14,7 @@ const game = new Game({
 	}
 });
 
-server.on('connection', socket => {
+webSocketServer.on('connection', socket => {
 	const user = new User({ socket, game });
 
 	game.users.push(user);
