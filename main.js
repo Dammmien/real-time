@@ -2,8 +2,9 @@ const User = require('./User');
 const Game = require('./Game');
 // const Server = require('./Server');
 const WebSocket = require('ws');
-
-const webSocketServer = new WebSocket.Server({ port: process.env.PORT || 8000 });
+const port = process.env.PORT || 8000;
+const webSocketServer = new WebSocket.Server({ port });
+console.log( `webSocketServer on port ${port}` );
 
 const game = new Game({
 	users: [],
