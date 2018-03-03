@@ -1,4 +1,4 @@
-const socket = new WebSocket("ws://localhost:8080");
+const socket = new WebSocket("ws://obscure-depths-27142.herokuapp.com:3000");
 
 const canvas = document.querySelector('canvas');
 const context = canvas.getContext('2d');
