@@ -1,0 +1,15 @@
+{
+  "name": "real-time",
+  "version": "1.0.0",
+  "description": "",
+  "main": "main.js",
+  "scripts": {
+    "start": "node main.js"
+  },
+  "author": "Damien Duhamel",
+  "license": "ISC",
+  "dependencies": {
+    "dragscroll": "^0.0.8",
+    "ws": "^4.1.0"
+  }
+}
