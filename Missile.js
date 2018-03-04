@@ -3,7 +3,7 @@ const Movable = require('./Movable');
 module.exports = class Missile extends Movable {
 
 	constructor(options) {
-		super(options);
+		super(Object.assign({ power: 10 }, options));
 	}
 
 	get data() {
@@ -20,6 +20,12 @@ module.exports = class Missile extends Movable {
 			this.destroy();
 		} else {
 			this.computePosition();
+		}
+
+		const collisionUser = this.game.users.find(user => user.contains(this));
+		if (collisionUser) {
+			collisionUser.life -= this.power;
+			this.destroy();
 		}
 	}
 

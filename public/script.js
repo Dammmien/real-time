@@ -39,10 +39,8 @@ setInterval(() => {
 
 const loop = () => {
   context.clearRect(0, 0, 4000, 3000);
-
   game.users.forEach( user => user.render() );
   game.missiles.forEach( missile => missile.render() );
-
   requestAnimationFrame(loop);
 }
 

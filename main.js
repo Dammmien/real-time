@@ -14,17 +14,21 @@ const game = new Game({
 });
 
 webSocketServer.on('connection', socket => {
-	const user = new User({ socket, game });
-
+	const user = new User({
+		id: Math.random().toString(36).substr(2),
+		socket,
+		game
+	});
 	game.users.push(user);
-
+	console.log( game.users.map( user => user.data ) );
+	console.log( game.missiles.map( user => user.data ) );
 	user.send('game_setup', game.map);
 });
 
 
 setInterval(() => {
+	game.missiles.forEach(missile => missile.update());
 	game.users.forEach(user => user.update());
-	game.missiles.forEach( missile => missile.update() );
 }, 15);
 
 setInterval(() => {

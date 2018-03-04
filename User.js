@@ -4,14 +4,16 @@ const Missile = require('./Missile');
 module.exports = class User extends Movable {
 
 	constructor(options) {
-		super(Object.assign({ lastShoot: 0, controller: {} }, options));
+		super(Object.assign({ lastShoot: 0, controller: {}, life: 100, kills: 0, death: 0 }, options));
 		this.initListener();
 	}
 
 	get data() {
 		return {
+			id: this.id,
 			x: this.x,
 			y: this.y,
+			life: this.life,
 			speed: this.speed,
 			angle: this.angle
 		};
@@ -25,11 +27,11 @@ module.exports = class User extends Movable {
 
 	shoot() {
 		this.game.missiles.push(new Missile({
-			x: this.x,
-			y: this.y,
+			x: 14 * Math.cos(this.angle) + this.x,
+		  y: 14 * Math.sin(this.angle) + this.y,
 			game: this.game,
 			angle: this.angle,
-			speed: 10
+			speed: 8
 		}));
 
 		this.lastShoot = 10;
@@ -37,6 +39,13 @@ module.exports = class User extends Movable {
 
 	send(name, data) {
 		this.socket.send(JSON.stringify({name, data}));
+	}
+
+	respawn() {
+		this.death += 1;
+		this.life = 100;
+		this.x = this.game.map.width / 2;
+		this.y = this.game.map.height / 2;
 	}
 
 	destroy() {
@@ -58,9 +67,14 @@ module.exports = class User extends Movable {
 		if (this.controller.shoot && this.lastShoot === 0) this.shoot();
 	}
 
+	contains(p) {
+		return p.x >= this.x - 4 && p.x <= this.x + 4 && p.y >= this.y - 4 && p.y <= this.y + 4;
+	}
+
 	update() {
 		this.applyController();
 		this.computePosition();
+		if (this.life <= 0) this.respawn();
 	}
 
 }
