@@ -10,7 +10,7 @@ class User {
 	}
 
 	render() {
-    this.game.context.strokeStyle = '#FFFFFF';
+    this.game.context.strokeStyle = this.isMe ? '#FFFFFF' : '#C81E1E';
     this.game.context.lineWidth = 2;
 
     this.game.context.save();
@@ -26,10 +26,9 @@ class User {
     this.game.context.stroke();
     this.game.context.restore();
 
-
     this.game.context.fillStyle = '#FFFFFF';
 		this.game.context.fillRect(this.x - 10, this.y + 12, this.life / 5, 1);
-    this.game.context.fillStyle = 'rgba(255, 255, 255, 0.25)';
+    this.game.context.fillStyle = 'rgba(255, 255, 255, 0.4)';
 		this.game.context.fillRect(this.x - 10, this.y + 12, 20, 1);
 
 		this.game.context.font = '7px Arial';

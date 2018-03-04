@@ -39,7 +39,15 @@ setInterval(() => {
 
 const loop = () => {
   context.clearRect(0, 0, 4000, 3000);
-  game.users.forEach( user => user.render() );
+  game.users.forEach( user => {
+  	user.render();
+  	if (user.isMe) {
+			window.scrollTo(
+				user.x - window.innerWidth / 2,
+				user.y - window.innerHeight / 2
+			);
+  	}
+  });
   game.missiles.forEach( missile => missile.render() );
   requestAnimationFrame(loop);
 }

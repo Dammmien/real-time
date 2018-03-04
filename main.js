@@ -20,8 +20,6 @@ webSocketServer.on('connection', socket => {
 		game
 	});
 	game.users.push(user);
-	console.log( game.users.map( user => user.data ) );
-	console.log( game.missiles.map( user => user.data ) );
 	user.send('game_setup', game.map);
 });
 
@@ -34,7 +32,7 @@ setInterval(() => {
 setInterval(() => {
 	game.users.forEach(user => {
 		user.send('game_update', {
-			users: game.users.map(user => user.data),
+			users: game.users.map(x => Object.assign({ isMe: user === x }, x.data)),
 			missiles: game.missiles.map(missile => missile.data)
 		});
 	});

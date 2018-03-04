@@ -55,13 +55,13 @@ module.exports = class User extends Movable {
 	applyController() {
 		if (this.lastShoot > 0) this.lastShoot -= 1;
 
-		if (this.controller.left) this.angle -= 0.05;
-		if (this.controller.right) this.angle += 0.05;
+		if (this.controller.left) this.angle -= ( 5 - this.speed ) / 100;
+		if (this.controller.right) this.angle += ( 5 - this.speed ) / 100;
 
 		if (this.controller.top) {
-			if (this.speed < 4) this.speed += 0.1;
+			if (this.speed + 0.1 < 4) this.speed += 0.1;
 		} else {
-			if (this.speed > 0) this.speed -= 0.05;
+			if (this.speed - 0.05 > 0) this.speed -= 0.05;
 		}
 
 		if (this.controller.shoot && this.lastShoot === 0) this.shoot();
