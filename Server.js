@@ -2,9 +2,9 @@ const http = require('http');
 const url = require('url');
 const fs = require('fs');
 const path = require('path');
-const port = process.env.PORT || 3000;
+const port = process.env.PORT || 8000;
 
-http.createServer(function(req, res) {
+module.exports = http.createServer(function(req, res) {
   const parsedUrl = url.parse(req.url);
   let pathname = `./public${parsedUrl.pathname}`;
 
