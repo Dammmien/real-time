@@ -18,6 +18,10 @@ socket.onmessage = (event) => {
 	event = JSON.parse(event.data);
 
 	if (event.name === 'game_setup') {
+		game.map = {
+			height: event.data.height,
+			width: event.data.width
+		};
 		canvas.height = event.data.height;
 		canvas.style.height = event.data.height;
 		canvas.width = event.data.width;

@@ -21,12 +21,6 @@ module.exports = class Missile extends Movable {
 		} else {
 			this.computePosition();
 		}
-
-		const collisionUser = this.game.users.find(user => user.contains(this));
-		if (collisionUser) {
-			collisionUser.life -= this.power;
-			this.destroy();
-		}
 	}
 
 	destroy() {
