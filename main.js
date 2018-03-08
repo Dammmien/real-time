@@ -1,3 +1,4 @@
+const url = require('url');
 const User = require('./User');
 const Game = require('./Game');
 const Server = require('./Server');
@@ -14,15 +15,20 @@ const game = new Game({
 	}
 });
 
-webSocketServer.on('connection', socket => {
+webSocketServer.on('connection', (socket, req) => {
+  const name = url.parse(req.url, true).query.name;
+
 	const user = new User({
-		id: Math.random().toString(36).substr(2),
+		id: Math.random().toString(36).substring(2, 12),
 		x: Math.random() * game.map.width,
 		y: Math.random() * game.map.height,
+		name,
 		socket,
 		game
 	});
+
 	game.users.push(user);
+
 	user.send('game_setup', game.map);
 });
 

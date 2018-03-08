@@ -1,6 +1,6 @@
-const HOST = location.origin.replace('http', 'ws')
+const name = prompt("Please enter your name", undefined);
+const HOST = location.origin.replace('http', 'ws') + (name ? `?name=${name.substring(0, 10)}`: '');
 const socket = new WebSocket(HOST);
-
 const canvas = document.querySelector('canvas');
 const context = canvas.getContext('2d');
 
@@ -46,10 +46,8 @@ const loop = () => {
   game.users.forEach( user => {
   	user.render();
   	if (user.isMe) {
-			window.scrollTo(
-				user.x - window.innerWidth / 2,
-				user.y - window.innerHeight / 2
-			);
+  		canvas.style.left = `${-user.x + window.innerWidth / 2}px`;
+  		canvas.style.top = `${-user.y + window.innerHeight / 2}px`;
   	}
   });
   game.missiles.forEach( missile => missile.render() );
@@ -72,7 +70,6 @@ document.addEventListener('keydown', event => {
 	if (event.keyCode === 40) controller.bottom = true;
 	if (event.keyCode === 32) controller.shoot = true;
 	socket.send(JSON.stringify(controller));
-	event.preventDefault();
 });
 
 document.addEventListener('keyup', event => {

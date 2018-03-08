@@ -12,6 +12,7 @@ module.exports = class User extends Movable {
 	get data() {
 		return {
 			id: this.id,
+			name: this.name,
 			x: this.x,
 			y: this.y,
 			life: this.life,
@@ -67,7 +68,7 @@ module.exports = class User extends Movable {
 	}
 
 	contains(p) {
-		return p.x >= this.x - 4 && p.x <= this.x + 4 && p.y >= this.y - 4 && p.y <= this.y + 4;
+		return p.x >= this.x - 8 && p.x <= this.x + 8 && p.y >= this.y - 8 && p.y <= this.y + 8;
 	}
 
 	computePosition() {
