@@ -3,6 +3,7 @@ const HOST = location.origin.replace('http', 'ws') + (name ? `?name=${name.subst
 const socket = new WebSocket(HOST);
 const canvas = document.querySelector('canvas');
 const context = canvas.getContext('2d');
+const timer = document.getElementById('timer');
 
 let game = {
 	context,
@@ -26,9 +27,12 @@ socket.onmessage = (event) => {
 		canvas.style.height = event.data.height;
 		canvas.width = event.data.width;
 		canvas.style.width = event.data.width;
+		canvas.style.display = 'block';
 	} else if (event.name === 'game_update') {
+		timer.innerHTML = event.data.time;
 		game.users = event.data.users.map( user => new User(Object.assign(user, {game})) );
 		game.missiles = event.data.missiles.map( missile => new Missile(Object.assign(missile, {game})) );
+		if (event.data.status === 'finished') canvas.style.display = 'none';
 	}
 };
 

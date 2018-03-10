@@ -7,11 +7,9 @@ const WebSocket = require('ws');
 const webSocketServer = new WebSocket.Server({ server: server.httpServer });
 
 const game = new Game({
-	users: [],
-	missiles: [],
 	map: {
-		height: 3000,
-		width: 4000
+		height: 1400,
+		width: 2000
 	}
 });
 
@@ -32,28 +30,4 @@ webSocketServer.on('connection', (socket, req) => {
 	user.send('game_setup', game.map);
 });
 
-
-setInterval(() => {
-	game.users.forEach(user => user.update());
-	game.missiles.forEach(missile => missile.update());
-	game.missiles.forEach(missile => {
-		const collisionUser = game.users.find(user => user.contains(missile));
-		if (collisionUser) {
-			collisionUser.life -= missile.power;
-			if (collisionUser.life <= 0) {
-				collisionUser.deaths += 1;
-				missile.user.kills += 1;
-			}
-			missile.destroy();
-		}
-	});
-}, 15);
-
-setInterval(() => {
-	game.users.forEach(user => {
-		user.send('game_update', {
-			users: game.users.map(x => Object.assign({ isMe: user === x }, x.data)),
-			missiles: game.missiles.map(missile => missile.data)
-		});
-	});
-}, 45);
+game.start();

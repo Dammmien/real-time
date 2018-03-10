@@ -12,15 +12,36 @@
       overflow: hidden;
   	}
 
-  	canvas {
+    canvas {
       position: absolute;
-  		background: url('bg.png');
+      background: url('bg.png');
       letter-spacing: 2px;
+      display: none;
+    }
+
+    header {
+      position: fixed;
+      top: 0;
+      width: 100%;
+      background: black;
+      height: 50px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+  	#timer {
+  		color: white;
+      font-size: 24px;
+      font-family: courier;
   	}
   </style>
 </head>
 <body>
 	<canvas></canvas>
+  <header>
+    <div id="timer"></div>
+  </header>
   <script src="User.js"></script>
   <script src="Missile.js"></script>
   <script src="script.js"></script>
