@@ -4,7 +4,12 @@ class User {
     Object.assign(this, options);
   }
 
+  get displayName() {
+    return this.name ? this.name : this.id;
+  }
+
   update() {
+    console.log( this.id, this.score );
     this.x = this.speed * Math.cos(this.angle) + this.x;
     this.y = this.speed * Math.sin(this.angle) + this.y;
     if (this.x > this.game.map.width || this.x < 0) this.angle = Math.PI - this.angle;
@@ -36,7 +41,7 @@ class User {
     this.game.context.font = '10px Arial';
     this.game.context.fillStyle = 'rgba(255, 255, 255, 0.4)';
     this.game.context.textAlign = 'center';
-    this.game.context.fillText((this.name ? this.name : this.id).toUpperCase(), this.x, this.y + 40);
+    this.game.context.fillText(this.displayName.toUpperCase(), this.x, this.y + 40);
 
     this.game.context.fillText(`${this.kills} / ${this.deaths}`, this.x, this.y + 55);
   }

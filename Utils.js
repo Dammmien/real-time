@@ -5,7 +5,11 @@ module.exports = class Utils {
     const s = Math.floor((milliseconds % 60000) / 1000);
     const ms = Math.floor(milliseconds % 1000);
 
-		return `${m > 10 ? m : '0' + m }:${s > 10 ? s : '0' + s}:${ms > 99 ? ms : ms > 10 ? '0' + ms : '00' + ms}`;
+		return `${m > 9 ? m : '0' + m }:${s > 9 ? s : '0' + s}:${ms > 99 ? ms : ms > 9 ? '0' + ms : '00' + ms}`;
+	}
+
+	static getDistance(A, B) {
+		return Math.sqrt( Math.pow( B.x - A.x, 2 ) + Math.pow( B.y - A.y, 2 ) );
 	}
 
 }

@@ -8,13 +8,18 @@
   	body, html {
   		margin: 0;
   		padding: 0;
-      background: #111111;
+      background: black;
       overflow: hidden;
   	}
+
+    * {
+      box-sizing: border-box;
+    }
 
     canvas {
       position: absolute;
       background: url('bg.png');
+      border: 1px solid rgba(255, 255, 255, 0.08);
       letter-spacing: 2px;
       display: none;
     }
@@ -23,7 +28,8 @@
       position: fixed;
       top: 0;
       width: 100%;
-      background: black;
+      background: rgba(255, 255, 255, 0.08);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
       height: 50px;
       display: flex;
       justify-content: center;
@@ -35,6 +41,22 @@
       font-size: 24px;
       font-family: courier;
   	}
+
+    #leaderboard {
+      position: fixed;
+      bottom: 10px;
+      left: 10px;
+      color: rgba(255, 255, 255, 0.5);
+      padding: 10px;
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      list-style: none;
+      font-family: courier;
+      font-size: 10px;
+      letter-spacing: 2px;
+      line-height: 20px;
+      text-transform: uppercase;
+    }
   </style>
 </head>
 <body>
@@ -42,6 +64,8 @@
   <header>
     <div id="timer"></div>
   </header>
+
+  <ul id="leaderboard"></ul>
   <script src="User.js"></script>
   <script src="Missile.js"></script>
   <script src="script.js"></script>

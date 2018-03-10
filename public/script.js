@@ -15,6 +15,16 @@ socket.onopen = () => {
 	console.log( 'open' );
 };
 
+const updateLeaderBoard = (users) => {
+	const container = document.getElementById('leaderboard');
+	container.innerHTML = '';
+	users.sort((a, b) => b.score - a.score).forEach( user => {
+		const li = document.createElement('li');
+		li.innerHTML = `${user.displayName}: ${user.score}`;
+		container.appendChild(li);
+	} );
+};
+
 socket.onmessage = (event) => {
 	event = JSON.parse(event.data);
 
@@ -32,6 +42,7 @@ socket.onmessage = (event) => {
 		timer.innerHTML = event.data.time;
 		game.users = event.data.users.map( user => new User(Object.assign(user, {game})) );
 		game.missiles = event.data.missiles.map( missile => new Missile(Object.assign(missile, {game})) );
+		updateLeaderBoard(game.users);
 		if (event.data.status === 'finished') canvas.style.display = 'none';
 	}
 };

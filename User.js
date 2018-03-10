@@ -1,18 +1,31 @@
 const Movable = require('./Movable');
 const Missile = require('./Missile');
+const Utils = require('./Utils');
 const WebSocket = require('ws');
 
 module.exports = class User extends Movable {
 
 	constructor(options) {
-		super(Object.assign({ lastShoot: 0, controller: {}, life: 100, kills: 0, deaths: 0 }, options));
+		super(Object.assign({
+			lastShoot: 0,
+			controller: {},
+			life: 100,
+			kills: 0,
+			deaths: 0,
+			missilesHit: 0
+		}, options));
 		this.initListener();
+	}
+
+	get score() {
+		return ( this.kills / ( this.deaths + 1 ) * 1000 ) + this.missilesHit * 100
 	}
 
 	get data() {
 		return {
 			id: this.id,
 			name: this.name,
+			score: this.score,
 			x: this.x,
 			y: this.y,
 			life: this.life,
@@ -24,18 +37,19 @@ module.exports = class User extends Movable {
 	}
 
 	initListener() {
-		this.socket.on('message', message => this.controller = JSON.parse(message));
-		this.socket.on('close', () => this.destroy());
-		this.socket.on('error', err => console.log(err));
+		this.socket.onmessage = event => this.controller = JSON.parse(event.data);
+		this.socket.onclose = () => this.destroy();
+		this.socket.onerror = event => console.log(event);
 	}
 
 	shoot() {
+		const randomAngle = this.angle + (Math.random() - 0.5) / 10;
 		this.game.missiles.push(new Missile({
-			x: 14 * Math.cos(this.angle) + this.x,
-		  y: 14 * Math.sin(this.angle) + this.y,
-		  user: this,
+			x: 14 * Math.cos(randomAngle) + this.x,
+			y: 14 * Math.sin(randomAngle) + this.y,
+			user: this,
 			game: this.game,
-			angle: this.angle,
+			angle: randomAngle,
 			speed: 8
 		}));
 
@@ -44,9 +58,12 @@ module.exports = class User extends Movable {
 
 	send(name, data) {
 		if (this.socket.readyState === WebSocket.OPEN) {
-			this.socket.send(JSON.stringify({name, data}));
+			this.socket.send(JSON.stringify({
+				name,
+				data
+			}));
 		} else {
-			console.log( 'socket closed' );
+			console.log('socket closed');
 		}
 	}
 
@@ -61,14 +78,14 @@ module.exports = class User extends Movable {
 	}
 
 	applyController() {
-		if (this.controller.left) this.angle -= ( 5 - this.speed ) / 100;
-		if (this.controller.right) this.angle += ( 5 - this.speed ) / 100;
+		if (this.controller.left) this.angle -= (5 - this.speed) / 100;
+		if (this.controller.right) this.angle += (5 - this.speed) / 100;
 		if (this.controller.top && this.speed + 0.2 < 4) this.speed += 0.2;
 		if (this.controller.shoot && this.lastShoot === 0) this.shoot();
 	}
 
 	contains(p) {
-		return p.x >= this.x - 8 && p.x <= this.x + 8 && p.y >= this.y - 8 && p.y <= this.y + 8;
+		return Utils.getDistance(p, this) < 10;
 	}
 
 	computePosition() {

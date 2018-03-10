@@ -1,8 +1,8 @@
 const User = require('./User');
 const Utils = require('./Utils');
 
-// const GAME_DURATION = 2 * 60 * 1000;
-const GAME_DURATION = 20 * 1000;
+const GAME_DURATION = 2 * 60 * 1000;
+// const GAME_DURATION = 20 * 1000;
 const UPDATE_INTERVAL = 15;
 const BROADCAST_INTERVAL = 45;
 
@@ -62,6 +62,7 @@ module.exports = class Game {
 			const collisionUser = this.users.find(user => user.contains(missile));
 			if (collisionUser) {
 				collisionUser.life -= missile.power;
+				missile.user.missilesHit += 1;
 				if (collisionUser.life <= 0) {
 					collisionUser.deaths += 1;
 					missile.user.kills += 1;

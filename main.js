@@ -6,6 +6,8 @@ const server = new Server(process.env.PORT || 8000);
 const WebSocket = require('ws');
 const webSocketServer = new WebSocket.Server({ server: server.httpServer });
 
+process.on('warning', e => console.warn(e.stack));
+
 const game = new Game({
 	map: {
 		height: 1400,
