@@ -9,7 +9,8 @@
   "author": "Damien Duhamel",
   "license": "ISC",
   "dependencies": {
-    "dragscroll": "^0.0.8",
+    "inferno": "^4.0.8",
+    "inferno-create-element": "^4.0.8",
     "ws": "^4.1.0"
   }
 }

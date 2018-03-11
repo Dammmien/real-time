@@ -4,6 +4,8 @@ const socket = new WebSocket(HOST);
 const canvas = document.querySelector('canvas');
 const context = canvas.getContext('2d');
 const timer = document.getElementById('timer');
+const header = new Header(document.querySelector('header'));
+const leaderboard = new Leaderboard(document.getElementById('leaderboard'));
 
 let game = {
 	context,
@@ -13,16 +15,6 @@ let game = {
 
 socket.onopen = () => {
 	console.log( 'open' );
-};
-
-const updateLeaderBoard = (users) => {
-	const container = document.getElementById('leaderboard');
-	container.innerHTML = '';
-	users.sort((a, b) => b.score - a.score).forEach( user => {
-		const li = document.createElement('li');
-		li.innerHTML = `${user.displayName}: ${user.score}`;
-		container.appendChild(li);
-	} );
 };
 
 socket.onmessage = (event) => {
@@ -39,10 +31,11 @@ socket.onmessage = (event) => {
 		canvas.style.width = event.data.width;
 		canvas.style.display = 'block';
 	} else if (event.name === 'game_update') {
-		timer.innerHTML = event.data.time;
+		header.updateTimer(event.data.time);
 		game.users = event.data.users.map( user => new User(Object.assign(user, {game})) );
 		game.missiles = event.data.missiles.map( missile => new Missile(Object.assign(missile, {game})) );
-		updateLeaderBoard(game.users);
+		game.status = event.data.status;
+		leaderboard.updateList(game.users);
 		if (event.data.status === 'finished') canvas.style.display = 'none';
 	}
 };

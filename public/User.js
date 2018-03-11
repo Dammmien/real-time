@@ -9,7 +9,6 @@ class User {
   }
 
   update() {
-    console.log( this.id, this.score );
     this.x = this.speed * Math.cos(this.angle) + this.x;
     this.y = this.speed * Math.sin(this.angle) + this.y;
     if (this.x > this.game.map.width || this.x < 0) this.angle = Math.PI - this.angle;

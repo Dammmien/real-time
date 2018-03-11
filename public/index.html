@@ -5,10 +5,17 @@
   <meta name="viewport" content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, width=device-width, height=device-height" />
   <title>Pixel war</title>
   <style type="text/css">
+    :root {
+      --dark: rgb(15, 15, 20);
+      --active: rgb(120, 255, 210);
+      --box-background: rgba(120, 255, 210, 0.04);
+      --box-border: rgba(120, 255, 210, 0.08);
+    }
+
   	body, html {
   		margin: 0;
   		padding: 0;
-      background: black;
+      background: rgb(10, 10, 15);
       overflow: hidden;
   	}
 
@@ -18,8 +25,10 @@
 
     canvas {
       position: absolute;
-      background: url('bg.png');
-      border: 1px solid rgba(255, 255, 255, 0.08);
+      background-color: var(--dark);
+      background-image: url('bg.png');
+      border: 1px solid var(--box-border);
+      box-shadow: 0 0 20px rgba(0, 0, 0, 0.9);
       letter-spacing: 2px;
       display: none;
     }
@@ -28,8 +37,8 @@
       position: fixed;
       top: 0;
       width: 100%;
-      background: rgba(255, 255, 255, 0.08);
-      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+      background: var(--box-background);
+      border-bottom: 1px solid var(--box-border);
       height: 50px;
       display: flex;
       justify-content: center;
@@ -37,8 +46,9 @@
     }
 
   	#timer {
-  		color: white;
-      font-size: 24px;
+  		color: var(--active);
+      font-size: 20px;
+      letter-spacing: 2px;
       font-family: courier;
   	}
 
@@ -48,8 +58,11 @@
       left: 10px;
       color: rgba(255, 255, 255, 0.5);
       padding: 10px;
-      background: rgba(255, 255, 255, 0.08);
-      border: 1px solid rgba(255, 255, 255, 0.08);
+      margin: 0;
+      max-height: 200px;
+      overflow: auto;
+      background: var(--box-background);
+      border: 1px solid var(--box-border);
       list-style: none;
       font-family: courier;
       font-size: 10px;
@@ -57,17 +70,21 @@
       line-height: 20px;
       text-transform: uppercase;
     }
+
+    #leaderboard .me {
+      color: var(--active);
+    }
   </style>
 </head>
 <body>
-	<canvas></canvas>
-  <header>
-    <div id="timer"></div>
-  </header>
-
+  <canvas></canvas>
+  <header></header>
   <ul id="leaderboard"></ul>
   <script src="User.js"></script>
   <script src="Missile.js"></script>
+  <script src="components/Header.js"></script>
+  <script src="components/Leaderboard.js"></script>
+  <script src="components/Canvas.js"></script>
   <script src="script.js"></script>
 </body>
 </html>
