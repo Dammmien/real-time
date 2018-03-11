@@ -54,14 +54,11 @@ module.exports = class Game {
 		}, 5000);
 	}
 
-	update() {
-		if (this.time <= BROADCAST_INTERVAL) return this.stop();
-		this.users.forEach(user => user.update());
-		this.missiles.forEach(missile => missile.update());
+	checkCollision() {
 		this.missiles.forEach(missile => {
 			const collisionUser = this.users.find(user => user.contains(missile));
 			if (collisionUser) {
-				collisionUser.life -= missile.power;
+				collisionUser.life -= collisionUser. missile.power;
 				missile.user.missilesHit += 1;
 				if (collisionUser.life <= 0) {
 					collisionUser.deaths += 1;
@@ -70,6 +67,13 @@ module.exports = class Game {
 				missile.destroy();
 			}
 		});
+	}
+
+	update() {
+		if (this.time <= BROADCAST_INTERVAL) return this.stop();
+		this.users.forEach(user => user.update());
+		this.missiles.forEach(missile => missile.update());
+		this.checkCollision();
 	}
 
 	broadcast() {

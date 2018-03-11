@@ -32,16 +32,14 @@ class User {
     this.game.context.fill();
     this.game.context.restore();
 
-    this.game.context.fillStyle = '#FFFFFF';
+    this.game.context.fillStyle = 'rgb(120, 255, 210)';
     this.game.context.fillRect(this.x - 25, this.y + 20, this.life / 2, 1);
     this.game.context.fillStyle = 'rgba(255, 255, 255, 0.4)';
     this.game.context.fillRect(this.x - 25, this.y + 20, 50, 1);
 
-    this.game.context.font = '10px Arial';
-    this.game.context.fillStyle = 'rgba(255, 255, 255, 0.4)';
+    this.game.context.font = '8px "Press Start 2P"';
+    this.game.context.fillStyle = 'rgba(120, 255, 210, 0.2)';
     this.game.context.textAlign = 'center';
-    this.game.context.fillText(this.displayName.toUpperCase(), this.x, this.y + 40);
-
-    this.game.context.fillText(`${this.kills} / ${this.deaths}`, this.x, this.y + 55);
+    this.game.context.fillText(this.displayName.toUpperCase(), Math.floor(this.x), Math.floor(this.y) + 40);
   }
 }
