@@ -2,12 +2,41 @@ const name = prompt("Please enter your name", undefined);
 const HOST = location.origin.replace('http', 'ws') + (name ? `?name=${name.substring(0, 10)}`: '');
 const socket = new WebSocket(HOST);
 
-const header = new Header(document.querySelector('header'));
-const leaderboard = new Leaderboard(document.getElementById('leaderboard'));
-const canvas = new Canvas(document.querySelector('canvas'));
+const usersReducer = (state = [], action) => {
+
+  switch (action.type) {
+    case 'SET_USERS':
+      return action.users;
+    default:
+      return state
+  }
+
+};
+
+const timerReducer = (state = '', action) => {
+
+  switch (action.type) {
+    case 'SET_TIMER':
+      return action.timer;
+    default:
+      return state
+  }
+
+};
+
+const reducers = (state = {}, action) => {
+  return {
+    users: usersReducer(state.users, action),
+    timer: timerReducer(state.timer, action)
+  };
+}
+
+const store = Redux.createStore(reducers, window.STATE_FROM_SERVER);
+
+const app = new App();
 
 let game = {
-	context : canvas.context,
+	context : app.canvas.context,
 	users: [],
 	missiles: []
 };
@@ -25,16 +54,17 @@ socket.onmessage = (event) => {
 			width: event.data.width
 		};
 
-		canvas.setSize(game.map);
-		canvas.show();
+		app.canvas.setSize(game.map);
+		app.canvas.show();
 	} else if (event.name === 'game_update') {
-		game.users = event.data.users.map( user => new User(Object.assign(user, {game})) );
-		game.missiles = event.data.missiles.map( missile => new Missile(Object.assign(missile, {game})) );
+		game.users = event.data.users.map(user => new User(Object.assign(user, {game})));
+		game.missiles = event.data.missiles.map(missile => new Missile(Object.assign(missile, {game})));
 		game.status = event.data.status;
 
-		header.updateTimer(event.data.time);
-		leaderboard.updateList(game.users);
-		if (event.data.status === 'finished') canvas.hide();
+		store.dispatch({type: 'SET_USERS', users: event.data.users.map(user => new User(Object.assign(user, {game})))});
+		store.dispatch({type: 'SET_TIMER', timer: event.data.time});
+
+		if (event.data.status === 'finished') app.canvas.hide();
 	}
 };
 
@@ -48,10 +78,10 @@ setInterval(() => {
 }, 15);
 
 const loop = () => {
-  canvas.clear();
+  app.canvas.clear();
   game.users.forEach( user => {
   	user.render();
-  	if (user.isMe) canvas.followUser(user);
+  	if (user.isMe) app.canvas.followUser(user);
   });
   game.missiles.forEach( missile => missile.render() );
   requestAnimationFrame(loop);

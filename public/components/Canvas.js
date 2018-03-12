@@ -2,24 +2,24 @@ class Canvas {
 
   constructor(container) {
     this.container = container;
-    this.context = this.container.getContext('2d');
     this.size = {};
+    this.mount()
   }
 
   setSize(size) {
     this.size = size;
-    this.container.height = size.height;
-    this.container.style.height = size.height;
-    this.container.width = size.width;
-    this.container.style.width = size.width;
+    this.element.height = size.height;
+    this.element.style.height = size.height;
+    this.element.width = size.width;
+    this.element.style.width = size.width;
   }
 
   show() {
-    this.container.style.display = 'block';
+    this.element.style.display = 'block';
   }
 
   hide() {
-    this.container.style.display = 'none';
+    this.element.style.display = 'none';
   }
 
   clear() {
@@ -27,8 +27,14 @@ class Canvas {
   }
 
   followUser(user) {
-    this.container.style.left = `${-user.x + window.innerWidth / 2}px`;
-    this.container.style.top = `${-user.y + window.innerHeight / 2}px`;
+    this.element.style.left = `${-user.x + window.innerWidth / 2}px`;
+    this.element.style.top = `${-user.y + window.innerHeight / 2}px`;
+  }
+
+  mount() {
+    this.element = document.createElement('canvas');
+    this.context = this.element.getContext('2d');
+    this.container.appendChild(this.element);
   }
 
 }
