@@ -5,8 +5,8 @@ class Header {
 		this.mount();
 	}
 
-	updateTimer(x) {
-		this.timer.innerHTML = x;
+	updateTimer(value) {
+		this.timer.textContent = value;
 	}
 
 	mount() {

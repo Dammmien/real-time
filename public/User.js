@@ -15,6 +15,20 @@ class User {
     if (this.y > this.game.map.height || this.y < 0) this.angle = Math.PI * 2 - this.angle;
   }
 
+  renderLife() {
+    this.game.context.fillStyle = 'rgb(120, 255, 210)';
+    this.game.context.fillRect(this.x - 25, this.y + 20, this.life / 2, 1);
+    this.game.context.fillStyle = 'rgba(255, 255, 255, 0.4)';
+    this.game.context.fillRect(this.x - 25, this.y + 20, 50, 1);
+  }
+
+  renderName() {
+    this.game.context.font = '8px "Press Start 2P"';
+    this.game.context.fillStyle = 'rgba(120, 255, 210, 0.2)';
+    this.game.context.textAlign = 'center';
+    this.game.context.fillText(this.displayName.toUpperCase(), Math.floor(this.x), Math.floor(this.y) + 40);
+  }
+
   render() {
     this.game.context.fillStyle = this.isMe ? '#FFFFFF' : '#C81E1E';
     this.game.context.lineWidth = 2;
@@ -32,14 +46,7 @@ class User {
     this.game.context.fill();
     this.game.context.restore();
 
-    this.game.context.fillStyle = 'rgb(120, 255, 210)';
-    this.game.context.fillRect(this.x - 25, this.y + 20, this.life / 2, 1);
-    this.game.context.fillStyle = 'rgba(255, 255, 255, 0.4)';
-    this.game.context.fillRect(this.x - 25, this.y + 20, 50, 1);
-
-    this.game.context.font = '8px "Press Start 2P"';
-    this.game.context.fillStyle = 'rgba(120, 255, 210, 0.2)';
-    this.game.context.textAlign = 'center';
-    this.game.context.fillText(this.displayName.toUpperCase(), Math.floor(this.x), Math.floor(this.y) + 40);
+    this.renderLife();
+    this.renderName();
   }
 }

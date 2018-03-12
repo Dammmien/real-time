@@ -1,14 +1,13 @@
 const name = prompt("Please enter your name", undefined);
 const HOST = location.origin.replace('http', 'ws') + (name ? `?name=${name.substring(0, 10)}`: '');
 const socket = new WebSocket(HOST);
-const canvas = document.querySelector('canvas');
-const context = canvas.getContext('2d');
-const timer = document.getElementById('timer');
+
 const header = new Header(document.querySelector('header'));
 const leaderboard = new Leaderboard(document.getElementById('leaderboard'));
+const canvas = new Canvas(document.querySelector('canvas'));
 
 let game = {
-	context,
+	context : canvas.context,
 	users: [],
 	missiles: []
 };
@@ -25,18 +24,17 @@ socket.onmessage = (event) => {
 			height: event.data.height,
 			width: event.data.width
 		};
-		canvas.height = event.data.height;
-		canvas.style.height = event.data.height;
-		canvas.width = event.data.width;
-		canvas.style.width = event.data.width;
-		canvas.style.display = 'block';
+
+		canvas.setSize(game.map);
+		canvas.show();
 	} else if (event.name === 'game_update') {
-		header.updateTimer(event.data.time);
 		game.users = event.data.users.map( user => new User(Object.assign(user, {game})) );
 		game.missiles = event.data.missiles.map( missile => new Missile(Object.assign(missile, {game})) );
 		game.status = event.data.status;
+
+		header.updateTimer(event.data.time);
 		leaderboard.updateList(game.users);
-		if (event.data.status === 'finished') canvas.style.display = 'none';
+		if (event.data.status === 'finished') canvas.hide();
 	}
 };
 
@@ -50,13 +48,10 @@ setInterval(() => {
 }, 15);
 
 const loop = () => {
-  context.clearRect(0, 0, 4000, 3000);
+  canvas.clear();
   game.users.forEach( user => {
   	user.render();
-  	if (user.isMe) {
-  		canvas.style.left = `${-user.x + window.innerWidth / 2}px`;
-  		canvas.style.top = `${-user.y + window.innerHeight / 2}px`;
-  	}
+  	if (user.isMe) canvas.followUser(user);
   });
   game.missiles.forEach( missile => missile.render() );
   requestAnimationFrame(loop);
@@ -72,11 +67,12 @@ const controller = {
 };
 
 document.addEventListener('keydown', event => {
-	if (event.keyCode === 37) controller.left = true;
-	if (event.keyCode === 38) controller.top = true;
-	if (event.keyCode === 39) controller.right = true;
-	if (event.keyCode === 40) controller.bottom = true;
-	if (event.keyCode === 32) controller.shoot = true;
+	if (event.keyCode === 37 && !controller.left) controller.left = true;
+	else if (event.keyCode === 38 && !controller.top) controller.top = true;
+	else if (event.keyCode === 39 && !controller.right) controller.right = true;
+	else if (event.keyCode === 40 && !controller.bottom) controller.bottom = true;
+	else if (event.keyCode === 32 && !controller.shoot) controller.shoot = true;
+	else return;
 	socket.send(JSON.stringify(controller));
 });
 
