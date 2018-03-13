@@ -1,8 +1,9 @@
 const User = require('./User');
+const Bonus = require('./Bonus');
 const Utils = require('./Utils');
 
 const GAME_DURATION = 2 * 60 * 1000;
-// const GAME_DURATION = 20 * 1000;
+const BONUS_INTERVAL = 10 * 1000;
 const UPDATE_INTERVAL = 15;
 const BROADCAST_INTERVAL = 45;
 
@@ -12,6 +13,7 @@ module.exports = class Game {
 		Object.assign(this, {
 			status: 'created',
 			users: [],
+			bonus: [],
 			missiles: []
 		}, options);
 	}
@@ -41,12 +43,14 @@ module.exports = class Game {
 		this.updateLoop = setInterval(() => this.update(), UPDATE_INTERVAL);
 		this.users.forEach(user => user.send('game_setup', this.map));
 		this.broadcastLoop = setInterval(() => this.broadcast(), BROADCAST_INTERVAL);
+		this.bonusLoop = setInterval(() => this.createBonus(), BONUS_INTERVAL);
 	}
 
 	stop() {
 		this.status = 'finished';
 		clearInterval(this.updateLoop);
 		clearInterval(this.broadcastLoop);
+		clearInterval(this.bonusLoop);
 		this.broadcast();
 		setTimeout(() => {
 			this.reset();
@@ -56,9 +60,9 @@ module.exports = class Game {
 
 	checkCollision() {
 		this.missiles.forEach(missile => {
-			const collisionUser = this.users.find(user => user.contains(missile));
+			const collisionUser = this.users.find(user => user !== missile.user && user.contains(missile));
 			if (collisionUser) {
-				collisionUser.life -= collisionUser. missile.power;
+				collisionUser.applyDamage(missile.power);
 				missile.user.missilesHit += 1;
 				if (collisionUser.life <= 0) {
 					collisionUser.deaths += 1;
@@ -67,6 +71,26 @@ module.exports = class Game {
 				missile.destroy();
 			}
 		});
+
+		this.bonus.forEach(bonus => {
+			const collisionUser = this.users.find(user => bonus.contains(user));
+
+			if (collisionUser) {
+				collisionUser.shield = 100;
+				bonus.destroy();
+			}
+		});
+	}
+
+	createBonus() {
+		this.bonus.push(
+			new Bonus({
+				type: 'shield',
+				game: this,
+				x: Math.random() * this.map.width,
+				y: Math.random() * this.map.height
+			})
+		);
 	}
 
 	update() {
@@ -81,7 +105,8 @@ module.exports = class Game {
 			time: this.status === 'finished' ? Utils.formatDuration(0) : Utils.formatDuration(this.time),
 			status: this.status,
 			users: this.users.map(x => Object.assign({ isMe: user === x }, x.data)),
-			missiles: this.missiles.map(missile => missile.data)
+			missiles: this.missiles.map(missile => missile.data),
+			bonus: this.bonus.map(bonus => bonus.data)
 		}));
 	}
 

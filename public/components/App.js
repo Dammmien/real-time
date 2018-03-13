@@ -2,13 +2,15 @@ class App {
 
 	constructor(map) {
 		this.container = document.body;
-		this.map = map;
 		this.state = store.getState();
-		this.mount();
-		this.canvas.setSize(this.map);
-		this.canvas.show();
 		store.subscribe(state => this.state = store.getState());
 		this.startUpdateLoop();
+		this.mount();
+	}
+
+	setup(map){
+		this.canvas.setSize(map);
+		this.canvas.show();
 	}
 
 	startUpdateLoop() {

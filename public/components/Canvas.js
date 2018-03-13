@@ -41,6 +41,7 @@ class Canvas {
       if (user.isMe) this.followUser(user);
     });
     this.state.missiles.forEach(missile => missile.render(this.context));
+    this.state.bonus.forEach(bonus => bonus.render(this.context));
     requestAnimationFrame(this.render.bind(this));
   }
 

@@ -11,6 +11,15 @@ const usersReducer = (state = [], action) => {
   }
 };
 
+const bonusReducer = (state = [], action) => {
+  switch (action.type) {
+    case 'SET_BONUS':
+      return action.bonus;
+    default:
+      return state;
+  }
+};
+
 const missilesReducer = (state = [], action) => {
   switch (action.type) {
     case 'SET_MISSILES':
@@ -32,12 +41,14 @@ const timerReducer = (state = '', action) => {
 const reducers = (state = {}, action) => {
   return {
     users: usersReducer(state.users, action),
+    bonus: bonusReducer(state.bonus, action),
     missiles: missilesReducer(state.missiles, action),
     timer: timerReducer(state.timer, action)
   };
 };
 
-const store = Redux.createStore(reducers, {users: [], missiles: []});
+const store = Redux.createStore(reducers, {users: [], missiles: [], bonus: []});
+let app = new App();
 
 socket.onopen = () => console.log( 'open' );
 
@@ -45,9 +56,10 @@ socket.onmessage = (event) => {
 	event = JSON.parse(event.data);
 
 	if (event.name === 'game_setup') {
-		new App(event.data);
+		app.setup(event.data);
 	} else if (event.name === 'game_update') {
 		store.dispatch({type: 'SET_USERS', users: event.data.users.map(user => new User(Object.assign(user)))});
+		store.dispatch({type: 'SET_BONUS', bonus: event.data.bonus.map(bonus => new Bonus(Object.assign(bonus)))});
 		store.dispatch({type: 'SET_MISSILES', missiles: event.data.missiles.map(missile => new Missile(Object.assign(missile)))});
 		store.dispatch({type: 'SET_TIMER', timer: event.data.time});
 		if (event.data.status === 'finished') app.canvas.hide();

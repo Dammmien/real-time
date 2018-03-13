@@ -12,6 +12,7 @@ module.exports = class User extends Movable {
 			life: 100,
 			kills: 0,
 			deaths: 0,
+			shield: 0,
 			missilesHit: 0
 		}, options));
 		this.initListener();
@@ -26,6 +27,7 @@ module.exports = class User extends Movable {
 			id: this.id,
 			name: this.name,
 			score: this.score,
+			shield: this.shield,
 			x: this.x,
 			y: this.y,
 			life: this.life,
@@ -84,8 +86,13 @@ module.exports = class User extends Movable {
 		if (this.controller.shoot && this.lastShoot === 0) this.shoot();
 	}
 
+	applyDamage(damage) {
+		if (this.shield > 0) this.shield = Math.max(0, this.shield - damage);
+		else this.life -= damage;
+	}
+
 	contains(p) {
-		return Utils.getDistance(p, this) < 10;
+		return Utils.getDistance(p, this) < (this.shield ? 20 : 10);
 	}
 
 	computePosition() {

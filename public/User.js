@@ -15,6 +15,12 @@ class User {
     if (this.y > 3000 || this.y < 0) this.angle = Math.PI * 2 - this.angle;
   }
 
+  renderShield(context) {
+    context.fillStyle = `rgba(255, 255, 255, ${this.shield / 1000})`;
+    context.arc(this.x, this.y, 20, 0, 2 * Math.PI);
+    context.fill();
+  }
+
   renderLife(context) {
     context.fillStyle = 'rgb(120, 255, 210)';
     context.fillRect(this.x - 25, this.y + 20, this.life / 2, 1);
@@ -31,14 +37,13 @@ class User {
 
   render(context) {
     context.fillStyle = this.isMe ? '#FFFFFF' : '#C81E1E';
-    context.lineWidth = 2;
 
     context.save();
     context.translate(this.x, this.y);
     context.rotate(this.angle);
     context.beginPath();
     context.moveTo(-8, -6);
-    context.lineTo(8, 0);
+    context.lineTo(10, 0);
     context.lineTo(-8, 6);
     context.lineTo(-6, 2);
     context.lineTo(-6, -2);
@@ -46,7 +51,8 @@ class User {
     context.fill();
     context.restore();
 
-    this.renderLife(context);
+    if (this.shield) this.renderShield(context);
+    if (!this.shield) this.renderLife(context);
     this.renderName(context);
   }
 }
