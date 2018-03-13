@@ -3,7 +3,10 @@ class Canvas {
   constructor(container) {
     this.container = container;
     this.size = {};
-    this.mount()
+    this.state = store.getState();
+    store.subscribe(state => this.state = store.getState());
+    this.mount();
+    this.render();
   }
 
   setSize(size) {
@@ -29,6 +32,16 @@ class Canvas {
   followUser(user) {
     this.element.style.left = `${-user.x + window.innerWidth / 2}px`;
     this.element.style.top = `${-user.y + window.innerHeight / 2}px`;
+  }
+
+  render() {
+    this.clear();
+    this.state.users.forEach(user => {
+      user.render(this.context);
+      if (user.isMe) this.followUser(user);
+    });
+    this.state.missiles.forEach(missile => missile.render(this.context));
+    requestAnimationFrame(this.render.bind(this));
   }
 
   mount() {

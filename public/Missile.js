@@ -1,27 +1,27 @@
 class Missile {
 
-	constructor(options) {
-		Object.assign(this, options);
-	}
+  constructor(options) {
+    Object.assign(this, options);
+  }
 
-	update() {
-		this.x = this.speed * Math.cos(this.angle) + this.x;
-		this.y = this.speed * Math.sin(this.angle) + this.y;
-	}
+  update() {
+    this.x = this.speed * Math.cos(this.angle) + this.x;
+    this.y = this.speed * Math.sin(this.angle) + this.y;
+  }
 
-	render() {
-    this.game.context.save();
-    this.game.context.strokeStyle = "#FFFFFF";
-    this.game.context.lineWidth = 2;
-    this.game.context.translate(this.x, this.y);
-    this.game.context.rotate(this.angle);
+  render(context) {
+    context.save();
+    context.strokeStyle = "#FFFFFF";
+    context.lineWidth = 2;
+    context.translate(this.x, this.y);
+    context.rotate(this.angle);
 
-    this.game.context.beginPath();
-    this.game.context.moveTo(0, 0);
-    this.game.context.lineTo(-10, 0);
-    this.game.context.closePath();
+    context.beginPath();
+    context.moveTo(0, 0);
+    context.lineTo(-10, 0);
+    context.closePath();
 
-    this.game.context.stroke();
-    this.game.context.restore();
-	}
+    context.stroke();
+    context.restore();
+  }
 }
