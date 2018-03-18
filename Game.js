@@ -3,7 +3,7 @@ const Bonus = require('./Bonus');
 const Utils = require('./Utils');
 
 const GAME_DURATION = 2 * 60 * 1000;
-const BONUS_INTERVAL = 10 * 1000;
+const BONUS_INTERVAL = 30 * 1000;
 const UPDATE_INTERVAL = 15;
 const BROADCAST_INTERVAL = 45;
 
@@ -35,6 +35,7 @@ module.exports = class Game {
 		});
 
 		this.missiles = [];
+		this.bonus = [];
 	}
 
 	start() {

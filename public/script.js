@@ -77,6 +77,32 @@ const controller = {
 	bottom: false
 };
 
+const ref = { x: 75, y: window.innerHeight - 75 };
+
+const updateControls = event => {
+  controller.left = event.touches[0].clientX < ref.x;
+  controller.right = event.touches[0].clientX > ref.x;
+  controller.top = event.touches[0].clientY < ref.y;
+  controller.bottom = event.touches[0].clientY > ref.y;
+  socket.send(JSON.stringify(controller));
+};
+
+document.addEventListener('touchstart', updateControls);
+document.addEventListener('touchmove', updateControls);
+
+const resetControls = event => {
+  console.log( 'resetControls' );
+  controller.left = false;
+  controller.right = false;
+  controller.top = false;
+  controller.bottom = false;
+  socket.send(JSON.stringify(controller));
+};
+
+document.addEventListener('touchend', resetControls);
+document.addEventListener('touchcancel', resetControls);
+document.addEventListener('touchleave', resetControls);
+
 document.addEventListener('keydown', event => {
 	if (event.keyCode === 37 && !controller.left) controller.left = true;
 	else if (event.keyCode === 38 && !controller.top) controller.top = true;
