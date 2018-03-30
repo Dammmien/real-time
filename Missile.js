@@ -16,15 +16,7 @@ module.exports = class Missile extends Movable {
 	}
 
 	update() {
-		if (this.isOutOfTheMap) {
-			this.destroy();
-		} else {
-			this.computePosition();
-		}
-	}
-
-	destroy() {
-		this.game.missiles.splice(this.game.missiles.indexOf(this), 1);
+		this.computePosition();
 	}
 
 }

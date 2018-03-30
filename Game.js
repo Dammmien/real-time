@@ -1,4 +1,6 @@
 const User = require('./User');
+const UsersManager = require('./UsersManager');
+const MissilesManager = require('./MissilesManager');
 const Bonus = require('./Bonus');
 const Utils = require('./Utils');
 
@@ -12,10 +14,11 @@ module.exports = class Game {
 	constructor(options) {
 		Object.assign(this, {
 			status: 'created',
-			users: [],
-			bonus: [],
-			missiles: []
+			bonus: []
 		}, options);
+
+		this.usersManager = new UsersManager(this.map);
+		this.missilesManager = new MissilesManager(this.map);
 	}
 
 	get time() {
@@ -23,17 +26,8 @@ module.exports = class Game {
 	}
 
 	reset() {
-		this.users = this.users.map(user => {
-			return new User({
-				id: user.id,
-				x: Math.random() * this.map.width,
-				y: Math.random() * this.map.height,
-				name: user.name,
-				socket: user.socket,
-				game: this
-			});
-		});
-
+		this.usersManager.reset();
+		this.missilesManager.reset();
 		this.missiles = [];
 		this.bonus = [];
 	}
@@ -42,7 +36,7 @@ module.exports = class Game {
 		this.startedAt = Date.now();
 		this.status = 'running';
 		this.updateLoop = setInterval(() => this.update(), UPDATE_INTERVAL);
-		this.users.forEach(user => user.send('game_setup', this.map));
+		this.usersManager.users.forEach(user => user.send('game_setup', this.map));
 		this.broadcastLoop = setInterval(() => this.broadcast(), BROADCAST_INTERVAL);
 		this.bonusLoop = setInterval(() => this.createBonus(), BONUS_INTERVAL);
 	}
@@ -60,8 +54,8 @@ module.exports = class Game {
 	}
 
 	checkCollision() {
-		this.missiles.forEach(missile => {
-			const collisionUser = this.users.find(user => user !== missile.user && user.contains(missile));
+		this.missilesManager.missiles.forEach(missile => {
+			const collisionUser = this.usersManager.users.find(user => user !== missile.user && user.contains(missile));
 			if (collisionUser) {
 				collisionUser.applyDamage(missile.power);
 				missile.user.missilesHit += 1;
@@ -69,12 +63,12 @@ module.exports = class Game {
 					collisionUser.deaths += 1;
 					missile.user.kills += 1;
 				}
-				missile.destroy();
+				this.missilesManager.destroy(missile);
 			}
 		});
 
 		this.bonus.forEach(bonus => {
-			const collisionUser = this.users.find(user => bonus.contains(user));
+			const collisionUser = this.usersManager.users.find(user => bonus.contains(user));
 
 			if (collisionUser) {
 				collisionUser.shield = 100;
@@ -94,19 +88,34 @@ module.exports = class Game {
 		);
 	}
 
+	createPlayer(name, socket) {
+		const user = this.usersManager.create({
+			id: Math.random().toString(36).substring(2, 12),
+			x: Math.random() * this.map.width,
+			y: Math.random() * this.map.height,
+			map: this.map,
+			name,
+			socket
+		});
+
+		socket.onclose = () => this.usersManager.destroy(user);
+
+		return user;
+	}
+
 	update() {
 		if (this.time <= BROADCAST_INTERVAL) return this.stop();
-		this.users.forEach(user => user.update());
-		this.missiles.forEach(missile => missile.update());
+		this.usersManager.users.forEach(user => user.update());
+		this.missilesManager.update();
 		this.checkCollision();
 	}
 
 	broadcast() {
-		this.users.forEach(user => user.send('game_update', {
+		this.usersManager.users.forEach(user => user.send('game_update', {
 			time: this.status === 'finished' ? Utils.formatDuration(0) : Utils.formatDuration(this.time),
 			status: this.status,
-			users: this.users.map(x => Object.assign({ isMe: user === x }, x.data)),
-			missiles: this.missiles.map(missile => missile.data),
+			users: this.usersManager.users.map(x => Object.assign({ isMe: user === x }, x.data)),
+			missiles: this.missilesManager.missiles.map(missile => missile.data),
 			bonus: this.bonus.map(bonus => bonus.data)
 		}));
 	}

@@ -58,9 +58,9 @@ socket.onmessage = (event) => {
 	if (event.name === 'game_setup') {
 		app.setup(event.data);
 	} else if (event.name === 'game_update') {
-		store.dispatch({type: 'SET_USERS', users: event.data.users.map(user => new User(Object.assign(user)))});
-		store.dispatch({type: 'SET_BONUS', bonus: event.data.bonus.map(bonus => new Bonus(Object.assign(bonus)))});
-		store.dispatch({type: 'SET_MISSILES', missiles: event.data.missiles.map(missile => new Missile(Object.assign(missile)))});
+		store.dispatch({type: 'SET_USERS', users: event.data.users.map(user => new User(user))});
+		store.dispatch({type: 'SET_BONUS', bonus: event.data.bonus.map(bonus => new Bonus(bonus))});
+		store.dispatch({type: 'SET_MISSILES', missiles: event.data.missiles.map(missile => new Missile(missile))});
 		store.dispatch({type: 'SET_TIMER', timer: event.data.time});
 		if (event.data.status === 'finished') app.canvas.hide();
 	}
@@ -76,32 +76,6 @@ const controller = {
 	right: false,
 	bottom: false
 };
-
-const ref = { x: 75, y: window.innerHeight - 75 };
-
-const updateControls = event => {
-  controller.left = event.touches[0].clientX < ref.x;
-  controller.right = event.touches[0].clientX > ref.x;
-  controller.top = event.touches[0].clientY < ref.y;
-  controller.bottom = event.touches[0].clientY > ref.y;
-  socket.send(JSON.stringify(controller));
-};
-
-document.addEventListener('touchstart', updateControls);
-document.addEventListener('touchmove', updateControls);
-
-const resetControls = event => {
-  console.log( 'resetControls' );
-  controller.left = false;
-  controller.right = false;
-  controller.top = false;
-  controller.bottom = false;
-  socket.send(JSON.stringify(controller));
-};
-
-document.addEventListener('touchend', resetControls);
-document.addEventListener('touchcancel', resetControls);
-document.addEventListener('touchleave', resetControls);
 
 document.addEventListener('keydown', event => {
 	if (event.keyCode === 37 && !controller.left) controller.left = true;

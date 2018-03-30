@@ -1,5 +1,5 @@
 const Movable = require('./Movable');
-const Missile = require('./Missile');
+const MissilesManager = require('./MissilesManager');
 const Utils = require('./Utils');
 const WebSocket = require('ws');
 
@@ -15,6 +15,9 @@ module.exports = class User extends Movable {
 			shield: 0,
 			missilesHit: 0
 		}, options));
+
+		this.missilesManager = new MissilesManager();
+
 		this.initListener();
 	}
 
@@ -40,20 +43,20 @@ module.exports = class User extends Movable {
 
 	initListener() {
 		this.socket.onmessage = event => this.controller = JSON.parse(event.data);
-		this.socket.onclose = () => this.destroy();
 		this.socket.onerror = event => console.log(event);
 	}
 
 	shoot() {
 		const randomAngle = this.angle + (Math.random() - 0.5) / 10;
-		this.game.missiles.push(new Missile({
+
+		this.missilesManager.create({
 			x: 14 * Math.cos(randomAngle) + this.x,
 			y: 14 * Math.sin(randomAngle) + this.y,
 			user: this,
-			game: this.game,
+			map: this.map,
 			angle: randomAngle,
 			speed: 8
-		}));
+		});
 
 		this.lastShoot = 10;
 	}
@@ -71,12 +74,8 @@ module.exports = class User extends Movable {
 
 	respawn() {
 		this.life = 100;
-		this.x = this.game.map.width / 2;
-		this.y = this.game.map.height / 2;
-	}
-
-	destroy() {
-		this.game.users.splice(this.game.users.indexOf(this), 1);
+		this.x = this.map.width / 2;
+		this.y = this.map.height / 2;
 	}
 
 	applyController() {
@@ -98,8 +97,8 @@ module.exports = class User extends Movable {
 	computePosition() {
 		this.x = this.speed * Math.cos(this.angle) + this.x;
 		this.y = this.speed * Math.sin(this.angle) + this.y;
-		if (this.x > this.game.map.width || this.x < 0) this.angle = Math.PI - this.angle;
-		if (this.y > this.game.map.height || this.y < 0) this.angle = Math.PI * 2 - this.angle;
+		if (this.x > this.map.width || this.x < 0) this.angle = Math.PI - this.angle;
+		if (this.y > this.map.height || this.y < 0) this.angle = Math.PI * 2 - this.angle;
 	}
 
 	update() {
