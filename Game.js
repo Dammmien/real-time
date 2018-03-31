@@ -71,7 +71,11 @@ module.exports = class Game {
 			const collisionUser = this.usersManager.users.find(user => bonus.contains(user));
 
 			if (collisionUser) {
-				collisionUser.shield = 100;
+				if (bonus.type === 'SHIELD') {
+					collisionUser.shield = 100;
+				} else if (bonus.type === 'DOUBLE_SHOT') {
+					collisionUser.doubleShot = true;
+				}
 				bonus.destroy();
 			}
 		});
@@ -80,7 +84,7 @@ module.exports = class Game {
 	createBonus() {
 		this.bonus.push(
 			new Bonus({
-				type: 'shield',
+				type: 'DOUBLE_SHOT',
 				game: this,
 				x: Math.random() * this.map.width,
 				y: Math.random() * this.map.height

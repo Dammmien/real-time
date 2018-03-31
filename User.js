@@ -13,6 +13,7 @@ module.exports = class User extends Movable {
 			kills: 0,
 			deaths: 0,
 			shield: 0,
+			doubleShot: false,
 			missilesHit: 0
 		}, options));
 
@@ -22,7 +23,7 @@ module.exports = class User extends Movable {
 	}
 
 	get score() {
-		return ( this.kills / ( this.deaths + 1 ) * 1000 ) + this.missilesHit * 100
+		return (this.kills / (this.deaths + 1) * 1000) + this.missilesHit * 100;
 	}
 
 	get data() {
@@ -47,26 +48,47 @@ module.exports = class User extends Movable {
 	}
 
 	shoot() {
-		const randomAngle = this.angle + (Math.random() - 0.5) / 10;
 
-		this.missilesManager.create({
-			x: 14 * Math.cos(randomAngle) + this.x,
-			y: 14 * Math.sin(randomAngle) + this.y,
-			user: this,
-			map: this.map,
-			angle: randomAngle,
-			speed: 8
-		});
+		if (this.doubleShot) {
+			const firstRandomAngle = this.angle + (Math.random() - 0.5) / 10;
+			const secondRandomAngle = this.angle + (Math.random() - 0.5) / 10;
+
+			this.missilesManager.create({
+				x: 10 * Math.cos(secondRandomAngle +  Math.PI / 2) + this.x,
+				y: 10 * Math.sin(secondRandomAngle +  Math.PI / 2) + this.y,
+				user: this,
+				map: this.map,
+				angle: firstRandomAngle,
+				speed: 8
+			});
+
+			this.missilesManager.create({
+				x: 10 * Math.cos(secondRandomAngle - Math.PI / 2) + this.x,
+				y: 10 * Math.sin(secondRandomAngle - Math.PI / 2) + this.y,
+				user: this,
+				map: this.map,
+				angle: secondRandomAngle,
+				speed: 8
+			});
+		} else {
+			const randomAngle = this.angle + (Math.random() - 0.5) / 10;
+
+			this.missilesManager.create({
+				x: 14 * Math.cos(randomAngle) + this.x,
+				y: 14 * Math.sin(randomAngle) + this.y,
+				user: this,
+				map: this.map,
+				angle: randomAngle,
+				speed: 8
+			});
+		}
 
 		this.lastShoot = 10;
 	}
 
 	send(name, data) {
 		if (this.socket.readyState === WebSocket.OPEN) {
-			this.socket.send(JSON.stringify({
-				name,
-				data
-			}));
+			this.socket.send(JSON.stringify({ name, data }));
 		} else {
 			console.log('socket closed');
 		}

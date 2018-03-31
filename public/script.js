@@ -2,7 +2,7 @@ const name = prompt("Please enter your name", undefined);
 const HOST = location.origin.replace('http', 'ws') + (name ? `?name=${name.substring(0, 10)}`: '');
 const socket = new WebSocket(HOST);
 const store = new Store({users: [], missiles: [], bonus: [], timer: ''});
-let app = new App();
+const app = new App();
 
 socket.onopen = () => console.log( 'open' );
 
@@ -28,7 +28,8 @@ const controller = {
 	left: false,
 	top: false,
 	right: false,
-	bottom: false
+  bottom: false,
+	shoot: false
 };
 
 document.addEventListener('keydown', event => {
@@ -43,9 +44,10 @@ document.addEventListener('keydown', event => {
 
 document.addEventListener('keyup', event => {
 	if (event.keyCode === 37) controller.left = false;
-	if (event.keyCode === 38) controller.top = false;
-	if (event.keyCode === 39) controller.right = false;
-	if (event.keyCode === 40) controller.bottom = false;
-	if (event.keyCode === 32) controller.shoot = false;
+	else if (event.keyCode === 38) controller.top = false;
+	else if (event.keyCode === 39) controller.right = false;
+	else if (event.keyCode === 40) controller.bottom = false;
+	else if (event.keyCode === 32) controller.shoot = false;
+  else return;
 	socket.send(JSON.stringify(controller));
 });
