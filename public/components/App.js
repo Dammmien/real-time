@@ -2,8 +2,10 @@ class App {
 
 	constructor(map) {
 		this.container = document.body;
-		this.state = store.getState();
-		store.subscribe(state => this.state = store.getState());
+		this.data = {
+			users: store.subscribe('users', this),
+			missiles: store.subscribe('missiles', this)
+		};
 		this.startUpdateLoop();
 		this.mount();
 	}
@@ -13,10 +15,14 @@ class App {
 		this.canvas.show();
 	}
 
+	update(key, value) {
+		this.data[key] = value;
+	}
+
 	startUpdateLoop() {
 		setInterval(() => {
-			this.state.users.forEach(user => user.update());
-			this.state.missiles.forEach(missile => missile.update());
+			this.data.users.forEach(user => user.update());
+			this.data.missiles.forEach(missile => missile.update());
 		}, 15);
 	}
 

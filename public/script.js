@@ -1,53 +1,7 @@
 const name = prompt("Please enter your name", undefined);
 const HOST = location.origin.replace('http', 'ws') + (name ? `?name=${name.substring(0, 10)}`: '');
 const socket = new WebSocket(HOST);
-
-const usersReducer = (state = [], action) => {
-  switch (action.type) {
-    case 'SET_USERS':
-      return action.users;
-    default:
-      return state;
-  }
-};
-
-const bonusReducer = (state = [], action) => {
-  switch (action.type) {
-    case 'SET_BONUS':
-      return action.bonus;
-    default:
-      return state;
-  }
-};
-
-const missilesReducer = (state = [], action) => {
-  switch (action.type) {
-    case 'SET_MISSILES':
-      return action.missiles;
-    default:
-      return state;
-  }
-};
-
-const timerReducer = (state = '', action) => {
-  switch (action.type) {
-    case 'SET_TIMER':
-      return action.timer;
-    default:
-      return state;
-  }
-};
-
-const reducers = (state = {}, action) => {
-  return {
-    users: usersReducer(state.users, action),
-    bonus: bonusReducer(state.bonus, action),
-    missiles: missilesReducer(state.missiles, action),
-    timer: timerReducer(state.timer, action)
-  };
-};
-
-const store = Redux.createStore(reducers, {users: [], missiles: [], bonus: []});
+const store = new Store({users: [], missiles: [], bonus: [], timer: ''});
 let app = new App();
 
 socket.onopen = () => console.log( 'open' );
@@ -58,10 +12,10 @@ socket.onmessage = (event) => {
 	if (event.name === 'game_setup') {
 		app.setup(event.data);
 	} else if (event.name === 'game_update') {
-		store.dispatch({type: 'SET_USERS', users: event.data.users.map(user => new User(user))});
-		store.dispatch({type: 'SET_BONUS', bonus: event.data.bonus.map(bonus => new Bonus(bonus))});
-		store.dispatch({type: 'SET_MISSILES', missiles: event.data.missiles.map(missile => new Missile(missile))});
-		store.dispatch({type: 'SET_TIMER', timer: event.data.time});
+    store.set('users', event.data.users.map(user => new User(user)));
+    store.set('missiles', event.data.missiles.map(missile => new Missile(missile)));
+    store.set('bonus', event.data.bonus.map(bonus => new Bonus(bonus)));
+    store.set('timer', event.data.time);
 		if (event.data.status === 'finished') app.canvas.hide();
 	}
 };

@@ -2,14 +2,10 @@ class Leaderboard {
 
 	constructor(container) {
 		this.container = container;
-		this.state = store.getState();
-		store.subscribe(() => {
-			const state = store.getState();
-			if (state.users !== this.state.users) {
-				this.state = state;
-				this.update();
-			}
-		});
+		this.data = {
+			users: store.subscribe('users', this),
+			total: null
+		};
 		this.mount();
 	}
 
@@ -20,9 +16,18 @@ class Leaderboard {
 		return li;
 	}
 
-	update() {
+	update(key, value) {
+		this.data[key] = value;
+		const total = this.data.users.reduce((total, user) => total + user.score, 0);
+		if (total !== this.data.total) {
+			this.render();
+			this.data.total = total;
+		}
+	}
+
+	render() {
 		this.element.innerHTML = '';
-		this.state.users.sort((a, b) => b.score - a.score).forEach(user => {
+		this.data.users.sort((a, b) => b.score - a.score).forEach(user => {
 			this.element.appendChild(this.getListItem(user));
 		});
 	}

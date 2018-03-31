@@ -2,12 +2,19 @@ class Header {
 
 	constructor(container) {
 		this.container = container;
-		store.subscribe(state => this.update(store.getState()));
+		this.data = {
+			timer: store.subscribe('timer', this)
+		};
 		this.mount();
 	}
 
-	update(state) {
-		this.timer.textContent = state.timer;
+	update(key, value) {
+		this.data[key] = value;
+		this.render();
+	}
+
+	render() {
+		this.timer.textContent = this.data.timer;
 	}
 
 	mount() {

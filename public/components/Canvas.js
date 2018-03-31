@@ -3,8 +3,11 @@ class Canvas {
   constructor(container) {
     this.container = container;
     this.size = {};
-    this.state = store.getState();
-    store.subscribe(state => this.state = store.getState());
+    this.data = {
+      users: store.subscribe('users', this),
+      missiles: store.subscribe('missiles', this),
+      bonus: store.subscribe('bonus', this)
+    };
     this.mount();
     this.render();
   }
@@ -34,14 +37,18 @@ class Canvas {
     this.element.style.top = `${-user.y + window.innerHeight / 2}px`;
   }
 
+  update(key, value) {
+    this.data[key] = value;
+  }
+
   render() {
     this.clear();
-    this.state.users.forEach(user => {
+    this.data.users.forEach(user => {
       user.render(this.context);
       if (user.isMe) this.followUser(user);
     });
-    this.state.missiles.forEach(missile => missile.render(this.context));
-    this.state.bonus.forEach(bonus => bonus.render(this.context));
+    this.data.missiles.forEach(missile => missile.render(this.context));
+    this.data.bonus.forEach(bonus => bonus.render(this.context));
     requestAnimationFrame(this.render.bind(this));
   }
 
