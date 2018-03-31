@@ -1,7 +1,6 @@
-const User = require('./User');
 const UsersManager = require('./UsersManager');
 const MissilesManager = require('./MissilesManager');
-const Bonus = require('./Bonus');
+const BonusManager = require('./BonusManager');
 const Utils = require('./Utils');
 
 const GAME_DURATION = 2 * 60 * 1000;
@@ -19,6 +18,7 @@ module.exports = class Game {
 
 		this.usersManager = new UsersManager(this.map);
 		this.missilesManager = new MissilesManager(this.map);
+		this.bonusManager = new BonusManager();
 	}
 
 	get time() {
@@ -28,8 +28,7 @@ module.exports = class Game {
 	reset() {
 		this.usersManager.reset();
 		this.missilesManager.reset();
-		this.missiles = [];
-		this.bonus = [];
+		this.bonusManager.reset();
 	}
 
 	start() {
@@ -67,7 +66,7 @@ module.exports = class Game {
 			}
 		});
 
-		this.bonus.forEach(bonus => {
+		this.bonusManager.bonus.forEach(bonus => {
 			const collisionUser = this.usersManager.users.find(user => bonus.contains(user));
 
 			if (collisionUser) {
@@ -76,20 +75,22 @@ module.exports = class Game {
 				} else if (bonus.type === 'DOUBLE_SHOT') {
 					collisionUser.doubleShot = true;
 				}
-				bonus.destroy();
+
+				this.bonusManager.destroy(bonus);
 			}
 		});
 	}
 
 	createBonus() {
-		this.bonus.push(
-			new Bonus({
-				type: 'DOUBLE_SHOT',
-				game: this,
-				x: Math.random() * this.map.width,
-				y: Math.random() * this.map.height
-			})
-		);
+		const types = ['DOUBLE_SHOT', 'SHIELD'];
+		const type = types[Math.floor(Math.random() * types.length)];
+
+		this.bonusManager.create({
+			type,
+			game: this,
+			x: Math.random() * this.map.width,
+			y: Math.random() * this.map.height
+		});
 	}
 
 	createPlayer(name, socket) {
@@ -120,7 +121,7 @@ module.exports = class Game {
 			status: this.status,
 			users: this.usersManager.users.map(x => Object.assign({ isMe: user === x }, x.data)),
 			missiles: this.missilesManager.missiles.map(missile => missile.data),
-			bonus: this.bonus.map(bonus => bonus.data)
+			bonus: this.bonusManager.bonus.map(bonus => bonus.data)
 		}));
 	}
 

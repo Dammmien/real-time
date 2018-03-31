@@ -23,7 +23,7 @@ module.exports = class User extends Movable {
 	}
 
 	get score() {
-		return (this.kills / (this.deaths + 1) * 1000) + this.missilesHit * 100;
+		return Math.floor((this.kills / (this.deaths + 1) * 1000) + this.missilesHit * 100);
 	}
 
 	get data() {

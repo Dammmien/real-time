@@ -18,8 +18,4 @@ module.exports = class Bonus {
 		return Utils.getDistance(p, this) < this.radius;
 	}
 
-	destroy() {
-		this.game.bonus.splice(this.game.bonus.indexOf(this), 1);
-	}
-
 }
