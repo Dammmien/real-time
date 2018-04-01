@@ -19,6 +19,7 @@ body, html {
   background: rgb(10, 10, 15);
   overflow: hidden;
   font-family: 'Press Start 2P';
+  user-select: none;
 }
 
 * {

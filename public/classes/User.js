@@ -16,7 +16,7 @@ class User {
   }
 
   renderShield(context) {
-    context.fillStyle = `rgba(255, 255, 255, ${this.shield / 1000})`;
+    context.fillStyle = `rgba(120, 255, 210, ${this.shield / 1000})`;
     context.arc(this.x, this.y, 20, 0, 2 * Math.PI);
     context.fill();
   }
@@ -53,6 +53,7 @@ class User {
 
     if (this.shield) this.renderShield(context);
     if (!this.shield) this.renderLife(context);
+
     this.renderName(context);
   }
 }

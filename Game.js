@@ -4,7 +4,7 @@ const BonusManager = require('./BonusManager');
 const Utils = require('./Utils');
 
 const GAME_DURATION = 2 * 60 * 1000;
-const BONUS_INTERVAL = 30 * 1000;
+const BONUS_INTERVAL = 10 * 1000;
 const UPDATE_INTERVAL = 15;
 const BROADCAST_INTERVAL = 45;
 
@@ -35,9 +35,9 @@ module.exports = class Game {
 		this.startedAt = Date.now();
 		this.status = 'running';
 		this.updateLoop = setInterval(() => this.update(), UPDATE_INTERVAL);
-		this.usersManager.users.forEach(user => user.send('game_setup', this.map));
 		this.broadcastLoop = setInterval(() => this.broadcast(), BROADCAST_INTERVAL);
 		this.bonusLoop = setInterval(() => this.createBonus(), BONUS_INTERVAL);
+		this.usersManager.users.forEach(user => user.send('game_setup', this.map));
 	}
 
 	stop() {
@@ -70,19 +70,14 @@ module.exports = class Game {
 			const collisionUser = this.usersManager.users.find(user => bonus.contains(user));
 
 			if (collisionUser) {
-				if (bonus.type === 'SHIELD') {
-					collisionUser.shield = 100;
-				} else if (bonus.type === 'DOUBLE_SHOT') {
-					collisionUser.setShooter('DOUBLE');
-				}
-
+				bonus.apply(collisionUser);
 				this.bonusManager.destroy(bonus);
 			}
 		});
 	}
 
 	createBonus() {
-		const types = ['DOUBLE_SHOT', 'SHIELD'];
+		const types = ['DOUBLE_SHOT', 'SHIELD', 'LIFE'];
 		const type = types[Math.floor(Math.random() * types.length)];
 
 		this.bonusManager.create({
