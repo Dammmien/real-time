@@ -73,7 +73,7 @@ module.exports = class Game {
 				if (bonus.type === 'SHIELD') {
 					collisionUser.shield = 100;
 				} else if (bonus.type === 'DOUBLE_SHOT') {
-					collisionUser.doubleShot = true;
+					collisionUser.setShooter('DOUBLE');
 				}
 
 				this.bonusManager.destroy(bonus);

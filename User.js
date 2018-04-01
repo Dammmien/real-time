@@ -1,5 +1,6 @@
 const Movable = require('./Movable');
-const MissilesManager = require('./MissilesManager');
+const SimpleShooter = require('./SimpleShooter');
+const DoubleShooter = require('./DoubleShooter');
 const Utils = require('./Utils');
 const WebSocket = require('ws');
 
@@ -13,11 +14,10 @@ module.exports = class User extends Movable {
 			kills: 0,
 			deaths: 0,
 			shield: 0,
-			doubleShot: false,
 			missilesHit: 0
 		}, options));
 
-		this.missilesManager = new MissilesManager();
+		this.setShooter('SIMPLE');
 
 		this.initListener();
 	}
@@ -47,42 +47,13 @@ module.exports = class User extends Movable {
 		this.socket.onerror = event => console.log(event);
 	}
 
+	setShooter(type)  {
+		if (type === 'SIMPLE') this.shooter = new SimpleShooter(this);
+		if (type === 'DOUBLE') this.shooter = new DoubleShooter(this);
+	}
+
 	shoot() {
-
-		if (this.doubleShot) {
-			const firstRandomAngle = this.angle + (Math.random() - 0.5) / 10;
-			const secondRandomAngle = this.angle + (Math.random() - 0.5) / 10;
-
-			this.missilesManager.create({
-				x: 10 * Math.cos(secondRandomAngle +  Math.PI / 2) + this.x,
-				y: 10 * Math.sin(secondRandomAngle +  Math.PI / 2) + this.y,
-				user: this,
-				map: this.map,
-				angle: firstRandomAngle,
-				speed: 8
-			});
-
-			this.missilesManager.create({
-				x: 10 * Math.cos(secondRandomAngle - Math.PI / 2) + this.x,
-				y: 10 * Math.sin(secondRandomAngle - Math.PI / 2) + this.y,
-				user: this,
-				map: this.map,
-				angle: secondRandomAngle,
-				speed: 8
-			});
-		} else {
-			const randomAngle = this.angle + (Math.random() - 0.5) / 10;
-
-			this.missilesManager.create({
-				x: 14 * Math.cos(randomAngle) + this.x,
-				y: 14 * Math.sin(randomAngle) + this.y,
-				user: this,
-				map: this.map,
-				angle: randomAngle,
-				speed: 8
-			});
-		}
-
+		this.shooter.shoot();
 		this.lastShoot = 10;
 	}
 

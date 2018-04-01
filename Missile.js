@@ -3,7 +3,7 @@ const Movable = require('./Movable');
 module.exports = class Missile extends Movable {
 
 	constructor(options) {
-		super(Object.assign({ power: 10 }, options));
+		super(Object.assign({ power: 10, speed: 8 }, options));
 	}
 
 	get data() {
